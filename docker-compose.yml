@@ -3,7 +3,6 @@ version: "3.9"
 services:
   db:
     image: mongo:4.4.6
-    container_name: mongodb
     restart: unless-stopped
     command: mongod --auth
     environment:
@@ -11,11 +10,13 @@ services:
       MONGO_USER_PASSWORD: "${MONGO_USER_PASSWORD}"
       MONGO_INITDB_ROOT_USERNAME: "${MONGO_ROOT_USERNAME}"
       MONGO_INITDB_ROOT_PASSWORD: "${MONGO_ROOT_PASSWORD}"
-      MONGO_INITDB_DATABASE: "${MONGO_DATABASE}"
+      MONGO_INITDB_DATABASE: "${MONGO_DATABASE_NAME}"
     volumes:
       - ./backend/db/data:/data/db
       - ./backend/db/entrypoint:/docker-entrypoint-initdb.d
-    ports:
+    expose:
+      - 27017
+    ports: # For MongoDB Compass
       - 27017:27017
     networks:
       - backend
@@ -23,14 +24,14 @@ services:
   api:
     build:
       context: ./backend
-    container_name: api
     command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
     environment:
       MONGO_USER_USERNAME: "${MONGO_USER_USERNAME}"
       MONGO_USER_PASSWORD: "${MONGO_USER_PASSWORD}"
-      MONGO_DATABASE: "${MONGO_DATABASE}"
+      MONGO_DATABASE_HOST: "${MONGO_DATABASE_HOST}"
+      MONGO_DATABASE_NAME: "${MONGO_DATABASE_NAME}"
+      MONGO_DATABASE_NAME_TEST: "${MONGO_DATABASE_NAME_TEST}"
       ENVIRONMENT: "${ENVIRONMENT}"
-      TESTING: "${TESTING}"
     volumes:
       - ./backend:/app
     ports:

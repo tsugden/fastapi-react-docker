@@ -1,5 +1,12 @@
 # environment variables
-.env
+*.env*
+!.env.example
 
 # vscode
 .vscode/
+
+# pyenv
+.pyenv
+
+# pytest
+.pytest_cache

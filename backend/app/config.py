@@ -1,6 +1,7 @@
 import logging
 import os
 from functools import lru_cache
+from typing import Optional
 
 from pydantic import BaseSettings
 
@@ -8,14 +9,12 @@ log = logging.getLogger("uvicorn")
 
 
 class Settings(BaseSettings):
-    ENVIRONMENT: str = os.getenv("ENVIRONMENT")
-    TESTING: str = os.getenv("TESTING")
-    MONGO_DATABASE: str = os.getenv("MONGO_DATABASE")
-    MONGO_USER_USERNAME: str = os.getenv("MONGO_USER_USERNAME")
-    MONGO_USER_PASSWORD: str = os.getenv("MONGO_USER_PASSWORD")
+    environment: Optional[str] = os.environ.get("ENVIRONMENT")
+    testing: Optional[str] = os.environ.get("TESTING")
+    db_name: Optional[str] = os.environ.get("MONGO_DATABASE_NAME")
 
 
-@lru_cache()
-async def get_settings() -> BaseSettings:
+@lru_cache
+def get_settings() -> BaseSettings:
     log.info("Loading config settings from the environment...")
     return Settings()
